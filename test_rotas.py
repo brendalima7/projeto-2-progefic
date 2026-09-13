@@ -167,3 +167,14 @@ def test_POST_criar_imovel_201(mock_conectar_banco, client):
     mock_conn.commit.assert_called_once()
     mock_cursor.close.assert_called_once()
     mock_conn.close.assert_called_once()
+
+# Teste erro ao criar um imovel
+@patch("utils.conectar_banco")
+def test_POST_criar_imovel_400(mock_conectar_banco, client):
+    """POST /imovel - falta campo obrigatório -> 400. Não deve acessar o banco."""
+    response = client.post("/imoveis", json={"logradouro": "Nicole Common"})
+
+    assert response.status_code == 400
+    assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
+
+    mock_conectar_banco.assert_not_called()
