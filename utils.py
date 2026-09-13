@@ -16,6 +16,15 @@ config = {
 def conectar_banco():
     return mysql.connector.connect(**config)
 
+
+# VALIDAÇÃO DE CAMPOS OBRIGATORIOS
+CAMPOS_OBRIGATORIOS = {"logradouro", "tipo_logradouro", "bairro", "cidade", "cep", "tipo", "valor", "data_aquisicao"}
+
+def validar_campos_faltantes(data):
+    if data is None:
+        return sorted(list(CAMPOS_OBRIGATORIOS))
+    return sorted([campo for campo in CAMPOS_OBRIGATORIOS if campo not in data])
+
 def listar_imoveis():
     conn = conectar_banco()
     cur = conn.cursor()
@@ -61,3 +70,16 @@ def buscar_imovel_por_id(id):
         "valor": imovel[7],
         "data_aquisicao": imovel[8]
     }
+
+def criar_imovel(dados):
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO imoveis (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
+        (dados["logradouro"], dados["tipo_logradouro"], dados["bairro"], dados["cidade"], dados["cep"], dados["tipo"], dados["valor"], dados["data_aquisicao"]),
+    )
+    conn.commit()
+    novo_id = cur.lastrowid
+    cur.close()
+    conn.close()
+    return novo_id
