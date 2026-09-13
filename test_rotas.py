@@ -47,3 +47,27 @@ def test_GET_listar_imoveis_200(mock_conectar_banco, client):
     mock_cursor.fetchall.assert_called_once()
     mock_cursor.close.assert_called_once()
     mock_conn.close.assert_called_once()
+
+# teste de listar imóveis com lista vazia
+@patch("utils.conectar_banco")
+def test_GET_listar_imoveis_vazios_200(mock_conectar_banco, client):
+    """GET /imoveis - lista vazia."""
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchall.return_value = []
+
+    mock_conectar_banco.return_value = mock_conn
+
+    response = client.get("/imoveis")
+
+    assert response.status_code == 200
+    assert response.get_json() == []
+
+    mock_cursor.execute.assert_called_once_with(
+        "SELECT * FROM imoveis"
+    )
+    mock_cursor.fetchall.assert_called_once()
+    mock_cursor.close.assert_called_once()
+    mock_conn.close.assert_called_once()
