@@ -38,3 +38,26 @@ def listar_imoveis():
             "data_aquisicao": imovel[8]
         })
     return imoveis
+
+def buscar_imovel_por_id(id):
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM imoveis WHERE id = %s", (id,))
+    imovel = cur.fetchone()
+    cur.close()
+    conn.close()
+
+    if not imovel:
+        return None
+
+    return {
+        "id": imovel[0],
+        "logradouro": imovel[1],
+        "tipo_logradouro": imovel[2],
+        "bairro": imovel[3],
+        "cidade": imovel[4],
+        "cep": imovel[5],
+        "tipo": imovel[6],
+        "valor": imovel[7],
+        "data_aquisicao": imovel[8]
+    }
