@@ -6,10 +6,12 @@
 ![Python](https://img.shields.io/badge/python-3.10+-blue.svg)
 ![MySQL](https://img.shields.io/badge/mysql-%234479A1.svg?style=flat&logo=mysql&logoColor=white)
 ![Postman](https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=postman&logoColor=white)
-![uv](https://img.shields.io/badge/uv-de5fe9?style=flat&logo=uv&logoColor=white)
 ![SQL](https://img.shields.io/badge/sql-%2300758F.svg?style=flat&logo=sqlite&logoColor=white)
 ![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=flat&logo=github&logoColor=white)
 
+# Deploy
+
+API hospedada na AWS EC2: http://18.207.155.72/imoveis
 
 # Setup
  
@@ -24,11 +26,13 @@ Rodar os testes:
 ```powershell
 py -m pytest
 ```
- 
-# Notas de TDD / pytest
- 
+
+---
+
+# Anotações pessoais de estudo
+
 ## Ordem certa
-1. Escreve o teste (falha, porque nada existe ainda)
+1. Escreve o teste 
 2. Escreve o código mínimo pra passar
 3. Refatora se precisar
 ## Testar exceção
