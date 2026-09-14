@@ -83,3 +83,20 @@ def criar_imovel(dados):
     cur.close()
     conn.close()
     return novo_id
+
+def alterar_imovel(id, dados):
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute(
+        "UPDATE imoveis SET logradouro = %s, tipo_logradouro = %s, bairro = %s, cidade = %s, cep = %s, tipo = %s, valor = %s, data_aquisicao = %s WHERE id = %s",
+        (dados["logradouro"], dados["tipo_logradouro"], dados["bairro"], dados["cidade"], dados["cep"], dados["tipo"], dados["valor"], dados["data_aquisicao"], id),
+    )
+    resultado = cur.rowcount
+    # Dica de sintaxe e comportamento:
+    # - .fetchone(): Método (ação que busca a linha, usa parênteses).
+    # - .rowcount  : Atributo (contagem de linhas afetadas/retornadas, sem parênteses).
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return resultado
