@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, call
 from servidor import app  # e.g., arquivo api.py com app = Flask(__name__)
 import utils
 
@@ -178,3 +178,41 @@ def test_POST_criar_imovel_400(mock_conectar_banco, client):
     assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
 
     mock_conectar_banco.assert_not_called()
+
+
+# Teste atualizar um imóvel existente;
+@patch("utils.conectar_banco")
+def test_update_imovel_200(mock_conectar_banco, client):
+    """PUT /imoveis/<id> - atualiza com sucesso."""
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+
+    mock_cursor.fetchone.return_value = (1, "Nicole Common", "Travessa", "Lake Danielle", "Judymouth", "86184", "casa em condominio", 488424.0, "2017-07-29")
+    # Simula que 1 linha foi atualizada
+    mock_cursor.rowcount = 1
+    mock_conectar_banco.return_value = mock_conn
+
+    payload = {
+        "logradouro": "Nicole Common", 
+        "tipo_logradouro": "Travessa", 
+        "bairro": "Lake Danielle", 
+        "cidade": "Judymouth", 
+        "cep": "86184", 
+        "tipo": "casa em condominio", 
+        "valor": 488424.0, 
+        "data_aquisicao": "2017-07-29"
+    }
+    response = client.put("/imoveis/1", json=payload)
+
+    assert response.status_code == 200
+    assert response.get_json() == {"mensagem": "Imóvel atualizado com sucesso"}
+
+    mock_cursor.execute.assert_has_calls([
+        call("SELECT * FROM imoveis WHERE id = %s", (1,)),
+        call("UPDATE imoveis SET logradouro = %s, tipo_logradouro = %s, bairro = %s, cidade = %s, cep = %s, tipo = %s, valor = %s, data_aquisicao = %s WHERE id = %s",
+        ("Nicole Common", "Travessa", "Lake Danielle", "Judymouth", "86184", "casa em condominio", 488424.0, "2017-07-29", 1),
+    )])
+    mock_conn.commit.assert_called_once()
+    assert mock_cursor.close.call_count == 2
+    assert mock_conn.close.call_count == 2
