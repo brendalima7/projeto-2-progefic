@@ -216,3 +216,15 @@ def test_update_imovel_200(mock_conectar_banco, client):
     mock_conn.commit.assert_called_once()
     assert mock_cursor.close.call_count == 2
     assert mock_conn.close.call_count == 2
+
+# Teste erro ao atualizar um imovel
+@patch("utils.conectar_banco")
+def test_update_imovel_400(mock_conectar_banco, client):
+    """PUT /imovel/<id> - falta campo obrigatório -> 400. Não deve acessar o banco."""
+    response = client.put("/imoveis/1", json={"logradouro": "Nicole Common"})
+
+    assert response.status_code == 400
+    assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
+
+    mock_conectar_banco.assert_not_called()
+    
