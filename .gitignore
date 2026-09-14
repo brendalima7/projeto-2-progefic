@@ -218,3 +218,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 ca.pem
+chave_aws.pem
+
