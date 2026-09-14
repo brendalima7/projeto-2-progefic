@@ -227,4 +227,36 @@ def test_update_imovel_400(mock_conectar_banco, client):
     assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
 
     mock_conectar_banco.assert_not_called()
+
+@patch("utils.conectar_banco")
+def test_update_imovel_not_found_404(mock_conectar_banco, client):
+    """PUT /imoveis/<id> - contato não encontrado (rowcount=0)."""
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+
+    mock_cursor.fetchone.return_value = None
+    mock_conectar_banco.return_value = mock_conn
+
+    payload = {
+            "logradouro": "Nicole Common", 
+            "tipo_logradouro": "Travessa", 
+            "bairro": "Lake Danielle", 
+            "cidade": "Judymouth", 
+            "cep": "86184", 
+            "tipo": "casa em condominio", 
+            "valor": 488424.0, 
+            "data_aquisicao": "2017-07-29"
+        }
+    response = client.put("/imoveis/999", json=payload)
+
+    assert response.status_code == 404
+    assert response.get_json() == {"erro": "Imóvel não encontrado"}
+
+    mock_cursor.execute.assert_called_once_with(
+        "SELECT * FROM imoveis WHERE id = %s",
+        (999,),
+    )
+    mock_cursor.close.assert_called_once()
+    mock_conn.close.assert_called_once()
     
