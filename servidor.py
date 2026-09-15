@@ -109,6 +109,8 @@ def alterar_imovel_rota(id):
         ]
     }), 200
 
+# DELETE bem-sucedido retorna 200 com mensagem (não 204) pra seguir a mesma
+# estrutura usada nos projetos anteriores e no site da disciplina.
 @app.route("/imoveis/<int:id>", methods=['DELETE'])
 def deletar_imovel_rota(id):
 
