@@ -80,16 +80,34 @@ def alterar_imovel_rota(id):
     campos_faltantes = utils.validar_campos_faltantes(dados)
     if campos_faltantes:
         return jsonify({
-            "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"
+            "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao",
+            "links": [
+                {"rel": "resource", "href": url_for("listar_um_imovel_rota", id=id, _external=True), "method": "GET"},
+                {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+            ]
         }), 400
 
     imovel = utils.buscar_imovel_por_id(id)
     if not imovel:
-        return jsonify({"erro": "Imóvel não encontrado"}), 404
-    
+        return jsonify({
+            "erro": "Imóvel não encontrado",
+            "links": [
+                {"rel": "resource", "href": url_for("listar_um_imovel_rota", id=id, _external=True), "method": "GET"},
+                {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+            ]
+        }), 404
+
     utils.alterar_imovel(id, dados)
 
-    return jsonify({"mensagem": "Imóvel atualizado com sucesso"}), 200
+    return jsonify({
+        "mensagem": "Imóvel atualizado com sucesso",
+        "links": [
+            {"rel": "self", "href": url_for("listar_um_imovel_rota", id=id, _external=True), "method": "GET"},
+            {"rel": "atualizar", "href": url_for("alterar_imovel_rota", id=id, _external=True), "method": "PUT"},
+            {"rel": "deletar", "href": url_for("deletar_imovel_rota", id=id, _external=True), "method": "DELETE"},
+            {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+        ]
+    }), 200
 
 @app.route("/imoveis/<int:id>", methods=['DELETE'])
 def deletar_imovel_rota(id):
