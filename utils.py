@@ -25,6 +25,14 @@ def validar_campos_faltantes(data):
         return sorted(list(CAMPOS_OBRIGATORIOS))
     return sorted([campo for campo in CAMPOS_OBRIGATORIOS if campo not in data])
 
+TIPOS_ACEITOS = ["casa", "apartamento", "terreno", "casa em condominio"]
+
+def validar_tipo(data):
+    
+    if data not in TIPOS_ACEITOS:
+        return False
+    return True
+
 def listar_imoveis():
     conn = conectar_banco()
     cur = conn.cursor()
@@ -112,3 +120,28 @@ def deletar_imovel(id):
     conn.close()
 
     return resultado
+
+def listar_imoveis_por_tipo(tipo):
+
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM imoveis WHERE tipo = %s", (tipo,))
+    resultados = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    imoveis = []
+    for imovel in resultados:
+        imoveis.append({
+            "id": imovel[0],
+            "logradouro": imovel[1],
+            "tipo_logradouro": imovel[2],
+            "bairro": imovel[3],
+            "cidade": imovel[4],
+            "cep": imovel[5],
+            "tipo": imovel[6],
+            "valor": imovel[7],
+            "data_aquisicao": imovel[8]
+        })
+
+    return imoveis

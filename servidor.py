@@ -64,6 +64,17 @@ def deletar_imovel_rota(id):
 
     return jsonify({"mensagem": "Imóvel excluído com sucesso"}), 200
 
+@app.route("/imoveis/<tipo>", methods=['GET'])
+def listar_imoveis_por_tipo_rota(tipo):
+
+    tipo_normalizado = tipo.lower() # normaliza para minusculo -> "Casa" -> "casa"
+    validacao = utils.validar_tipo(tipo_normalizado) # retorna True ou False
+    
+    if not validacao:
+        return jsonify({"erro": "Tipo inválido"}), 400
+
+    dados = utils.listar_imoveis_por_tipo(tipo_normalizado)
+    return jsonify(dados), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
