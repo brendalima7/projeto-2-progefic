@@ -18,7 +18,7 @@ API hospedada na AWS EC2: http://18.207.155.72/imoveis
 ```powershell
 py -m venv .venv
 .venv\Scripts\Activate.ps1
-py -m pip install pytest flask
+py -m pip install pytest flask mysql-connector-python python-dotenv
 ```
  
 Rodar os testes:
@@ -35,6 +35,7 @@ py -m pytest
 1. Escreve o teste 
 2. Escreve o código mínimo pra passar
 3. Refatora se precisar
+
 ## Testar exceção
 ```python
 import pytest
@@ -44,6 +45,7 @@ with pytest.raises(ValueError):
 ```
 - Usa o tipo certo (`ValueError`, `TypeError`, etc.), não `Exception` genérico, se o enunciado especificar.
 - Cada chamada que deve lançar erro vai no seu próprio `with pytest.raises(...)`.
+
 ## Testar função com resultado aleatório
 Uma única checagem pode passar "por sorte". Repete várias vezes:
 ```python
