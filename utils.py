@@ -100,3 +100,15 @@ def alterar_imovel(id, dados):
     conn.close()
 
     return resultado
+
+def deletar_imovel(id):
+
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM imoveis WHERE id = %s", (id,))
+    resultado = cur.rowcount
+    conn.commit()
+    cur.close()
+    conn.close()
+
+    return resultado

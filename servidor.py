@@ -11,7 +11,7 @@ def listar_imoveis_rota():
     return jsonify(dados), 200
 
 @app.route("/imoveis/<int:id>", methods=['GET'])
-def listar_um_imovel(id):
+def listar_um_imovel_rota(id):
 
     imovel = utils.buscar_imovel_por_id(id)
 
@@ -21,7 +21,7 @@ def listar_um_imovel(id):
     return jsonify(imovel), 200
 
 @app.route("/imoveis", methods=['POST'])
-def criar_imovel():
+def criar_imovel_rota():
 
     dados = request.get_json(silent=True)
 
@@ -35,7 +35,7 @@ def criar_imovel():
     return jsonify({"id": novo_id}), 201
 
 @app.route("/imoveis/<int:id>", methods=['PUT'])
-def alterar_imovel(id):
+def alterar_imovel_rota(id):
 
     dados = request.get_json(silent=True)
 
@@ -52,6 +52,17 @@ def alterar_imovel(id):
     utils.alterar_imovel(id, dados)
 
     return jsonify({"mensagem": "Imóvel atualizado com sucesso"}), 200
+
+@app.route("/imoveis/<int:id>", methods=['DELETE'])
+def deletar_imovel_rota(id):
+
+    imovel = utils.buscar_imovel_por_id(id)
+    if not imovel:
+        return jsonify({"erro": "Imóvel não encontrado"}), 404
+
+    utils.deletar_imovel(id)
+
+    return jsonify({"mensagem": "Imóvel excluído com sucesso"}), 200
 
 
 if __name__ == '__main__':
