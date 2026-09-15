@@ -55,11 +55,22 @@ def criar_imovel_rota():
     campos_faltantes = utils.validar_campos_faltantes(dados)
     if campos_faltantes:
         return jsonify({
-            "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"
+            "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao",
+            "links": [
+                {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+            ]
         }), 400
 
     novo_id = utils.criar_imovel(dados)
-    return jsonify({"id": novo_id}), 201
+    return jsonify({
+        "id": novo_id,
+        "links": [
+            {"rel": "self", "href": url_for("listar_um_imovel_rota", id=novo_id, _external=True), "method": "GET"},
+            {"rel": "atualizar", "href": url_for("alterar_imovel_rota", id=novo_id, _external=True), "method": "PUT"},
+            {"rel": "deletar", "href": url_for("deletar_imovel_rota", id=novo_id, _external=True), "method": "DELETE"},
+            {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+        ]
+    }), 201
 
 @app.route("/imoveis/<int:id>", methods=['PUT'])
 def alterar_imovel_rota(id):
