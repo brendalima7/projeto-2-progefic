@@ -175,18 +175,28 @@ def test_GET_listar_imoveis_por_tipo_200(mock_conectar_banco, client):
     response = client.get("/imoveis/casa em condominio") # substitui pela rota definida no sql do teste
 
     assert response.status_code == 200
-    assert response.get_json() == [{
-        "id": 1,
-        "logradouro": "Nicole Common", 
-        "tipo_logradouro": "Travessa", 
-        "bairro": "Lake Danielle", 
-        "cidade": "Judymouth", 
-        "cep": "85184", 
-        "tipo": "casa em condominio", 
-        "valor": 488424.0, 
-        "data_aquisicao": "2017-07-29"
-        },
-    ]
+    assert response.get_json() == {
+        "imoveis": [{
+            "id": 1,
+            "logradouro": "Nicole Common",
+            "tipo_logradouro": "Travessa",
+            "bairro": "Lake Danielle",
+            "cidade": "Judymouth",
+            "cep": "85184",
+            "tipo": "casa em condominio",
+            "valor": 488424.0,
+            "data_aquisicao": "2017-07-29",
+            "links": [
+                {"rel": "self", "href": "http://localhost/imoveis/1", "method": "GET"},
+                {"rel": "atualizar", "href": "http://localhost/imoveis/1", "method": "PUT"},
+                {"rel": "deletar", "href": "http://localhost/imoveis/1", "method": "DELETE"},
+            ]
+        }],
+        "links": [
+            {"rel": "self", "href": "http://localhost/imoveis/casa%20em%20condominio", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "SELECT * FROM imoveis WHERE tipo = %s",
@@ -211,7 +221,13 @@ def test_GET_listar_imoveis_por_tipo_vazio_200(mock_conectar_banco, client):
     response = client.get("/imoveis/casa em condominio")
 
     assert response.status_code == 200
-    assert response.get_json() == []
+    assert response.get_json() == {
+        "imoveis": [],
+        "links": [
+            {"rel": "self", "href": "http://localhost/imoveis/casa%20em%20condominio", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "SELECT * FROM imoveis WHERE tipo = %s",
@@ -228,7 +244,12 @@ def test_GET_listar_imovel_por_tipo_invalido_400(mock_conectar_banco, client):
     response = client.get("/imoveis/xxxx")
 
     assert response.status_code == 400
-    assert response.get_json() == {"erro": "Tipo inválido"}
+    assert response.get_json() == {
+        "erro": "Tipo inválido",
+        "links": [
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_conectar_banco.assert_not_called()
 
