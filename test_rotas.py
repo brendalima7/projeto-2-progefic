@@ -391,7 +391,15 @@ def test_update_imovel_200(mock_conectar_banco, client):
     response = client.put("/imoveis/1", json=payload)
 
     assert response.status_code == 200
-    assert response.get_json() == {"mensagem": "Imóvel atualizado com sucesso"}
+    assert response.get_json() == {
+        "mensagem": "Imóvel atualizado com sucesso",
+        "links": [
+            {"rel": "self", "href": "http://localhost/imoveis/1", "method": "GET"},
+            {"rel": "atualizar", "href": "http://localhost/imoveis/1", "method": "PUT"},
+            {"rel": "deletar", "href": "http://localhost/imoveis/1", "method": "DELETE"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_has_calls([
         call("SELECT * FROM imoveis WHERE id = %s", (1,)),
@@ -409,7 +417,13 @@ def test_update_imovel_400(mock_conectar_banco, client):
     response = client.put("/imoveis/1", json={"logradouro": "Nicole Common"})
 
     assert response.status_code == 400
-    assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
+    assert response.get_json() == {
+        "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao",
+        "links": [
+            {"rel": "resource", "href": "http://localhost/imoveis/1", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_conectar_banco.assert_not_called()
 
@@ -437,7 +451,13 @@ def test_update_imovel_not_found_404(mock_conectar_banco, client):
     response = client.put("/imoveis/999", json=payload)
 
     assert response.status_code == 404
-    assert response.get_json() == {"erro": "Imóvel não encontrado"}
+    assert response.get_json() == {
+        "erro": "Imóvel não encontrado",
+        "links": [
+            {"rel": "resource", "href": "http://localhost/imoveis/999", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "SELECT * FROM imoveis WHERE id = %s",
