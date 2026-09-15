@@ -145,3 +145,28 @@ def listar_imoveis_por_tipo(tipo):
         })
 
     return imoveis
+
+def listar_imoveis_por_cidade(cidade):
+
+    conn = conectar_banco()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM imoveis WHERE cidade = %s", (cidade,))
+    resultados = cur.fetchall()
+    cur.close()
+    conn.close()
+
+    imoveis = []
+    for imovel in resultados:
+        imoveis.append({
+            "id": imovel[0],
+            "logradouro": imovel[1],
+            "tipo_logradouro": imovel[2],
+            "bairro": imovel[3],
+            "cidade": imovel[4],
+            "cep": imovel[5],
+            "tipo": imovel[6],
+            "valor": imovel[7],
+            "data_aquisicao": imovel[8]
+        })
+
+    return imoveis

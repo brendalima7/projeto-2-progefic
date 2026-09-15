@@ -76,5 +76,11 @@ def listar_imoveis_por_tipo_rota(tipo):
     dados = utils.listar_imoveis_por_tipo(tipo_normalizado)
     return jsonify(dados), 200
 
+@app.route("/imoveis/cidade/<cidade>", methods=['GET'])
+def listar_imoveis_por_cidade_rota(cidade):
+
+    dados = utils.listar_imoveis_por_cidade(cidade)
+    return jsonify(dados), 200
+
 if __name__ == '__main__':
     app.run(debug=True)
