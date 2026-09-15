@@ -126,7 +126,21 @@ def listar_imoveis_por_tipo_rota(tipo):
 def listar_imoveis_por_cidade_rota(cidade):
 
     dados = utils.listar_imoveis_por_cidade(cidade)
-    return jsonify(dados), 200
+
+    for imovel in dados:
+        imovel["links"] = [
+            {"rel": "self", "href": url_for("listar_um_imovel_rota", id=imovel["id"], _external=True), "method": "GET"},
+            {"rel": "atualizar", "href": url_for("alterar_imovel_rota", id=imovel["id"], _external=True), "method": "PUT"},
+            {"rel": "deletar", "href": url_for("deletar_imovel_rota", id=imovel["id"], _external=True), "method": "DELETE"}
+        ]
+
+    return jsonify({
+        "imoveis": dados,
+        "links": [
+            {"rel": "self", "href": url_for("listar_imoveis_por_cidade_rota", cidade=cidade, _external=True), "method": "GET"},
+            {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+        ]
+    }), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
