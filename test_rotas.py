@@ -105,14 +105,20 @@ def test_GET_listar_um_imovel_200(mock_conectar_banco, client):
     assert response.status_code == 200
     assert response.get_json() == {
         "id": 1,
-        "logradouro": "Nicole Common", 
-        "tipo_logradouro": "Travessa", 
-        "bairro": "Lake Danielle", 
-        "cidade": "Judymouth", 
-        "cep": "85184", 
-        "tipo": "casa em condominio", 
-        "valor": 488424.0, 
-        "data_aquisicao": "2017-07-29"
+        "logradouro": "Nicole Common",
+        "tipo_logradouro": "Travessa",
+        "bairro": "Lake Danielle",
+        "cidade": "Judymouth",
+        "cep": "85184",
+        "tipo": "casa em condominio",
+        "valor": 488424.0,
+        "data_aquisicao": "2017-07-29",
+        "links": [
+            {"rel": "self", "href": "http://localhost/imoveis/1", "method": "GET"},
+            {"rel": "atualizar", "href": "http://localhost/imoveis/1", "method": "PUT"},
+            {"rel": "deletar", "href": "http://localhost/imoveis/1", "method": "DELETE"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
     }
 
     mock_cursor.execute.assert_called_once_with(
@@ -137,7 +143,13 @@ def test_GET_listar_um_imovel_not_found_404(mock_conectar_banco, client):
     response = client.get("/imoveis/999")
 
     assert response.status_code == 404
-    assert response.get_json() == {"erro": "Imóvel não encontrado"}
+    assert response.get_json() == {
+        "erro": "Imóvel não encontrado",
+        "links": [
+            {"rel": "resource", "href": "http://localhost/imoveis/999", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "SELECT * FROM imoveis WHERE id = %s",
