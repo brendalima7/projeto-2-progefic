@@ -30,7 +30,20 @@ def listar_um_imovel_rota(id):
     imovel = utils.buscar_imovel_por_id(id)
 
     if not imovel:
-        return jsonify({"erro": "Imóvel não encontrado"}), 404
+        return jsonify({
+            "erro": "Imóvel não encontrado",
+            "links": [
+                {"rel": "resource", "href": url_for("listar_um_imovel_rota", id=id, _external=True), "method": "GET"},
+                {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+            ]
+        }), 404
+
+    imovel["links"] = [
+        {"rel": "self", "href": url_for("listar_um_imovel_rota", id=id, _external=True), "method": "GET"},
+        {"rel": "atualizar", "href": url_for("alterar_imovel_rota", id=id, _external=True), "method": "PUT"},
+        {"rel": "deletar", "href": url_for("deletar_imovel_rota", id=id, _external=True), "method": "DELETE"},
+        {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+    ]
 
     return jsonify(imovel), 200
 
