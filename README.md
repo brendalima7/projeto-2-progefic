@@ -13,7 +13,19 @@
 
 API hospedada na AWS EC2: http://18.207.155.72/imoveis
 
-# Setup
+## Endpoints
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/imoveis` | Lista todos os imóveis |
+| GET | `/imoveis/<id>` | Busca um imóvel por id |
+| GET | `/imoveis/<tipo>` | Busca imóveis por tipo (casa, apartamento, terreno, casa em condominio) |
+| GET | `/imoveis/cidade/<cidade>` | Busca imóveis por cidade |
+| POST | `/imoveis` | Cria um imóvel |
+| PUT | `/imoveis/<id>` | Atualiza um imóvel |
+| DELETE | `/imoveis/<id>` | Exclui um imóvel |
+
+## Setup
  
 ```powershell
 py -m venv .venv
