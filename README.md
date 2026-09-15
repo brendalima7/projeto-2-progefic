@@ -57,3 +57,24 @@ for _ in range(50):
 ## Organização
 - Rota (`servidor.py`) só recebe requisição e devolve resposta — nunca tem SQL dentro.
 - `utils.py` (ou `models.py`) guarda a lógica (SQL, validações, etc.) que a rota chama.
+
+## Métodos HTTP
+| Método | O que é | Pra que usar | Código de sucesso comum |
+|---|---|---|---|
+| GET | Busca/leitura de dado | Listar ou consultar recurso, sem alterar nada | 200 |
+| POST | Criação | Criar um novo recurso | 201 |
+| PUT | Atualização (substitui inteiro) | Atualizar um recurso existente por completo | 200 |
+| PATCH | Atualização parcial | Atualizar só alguns campos de um recurso | 200 |
+| DELETE | Remoção | Excluir um recurso existente | 200 ou 204 (sem corpo) |
+
+## Códigos de status HTTP mais usados
+| Código | Significado | Quando aparece |
+|---|---|---|
+| 200 | OK | Requisição deu certo, tem corpo de resposta |
+| 201 | Created | Recurso criado com sucesso (comum em POST) |
+| 204 | No Content | Deu certo, mas não tem corpo (comum em DELETE) |
+| 400 | Bad Request | Requisição inválida (campo faltando, tipo inválido) |
+| 404 | Not Found | Recurso não existe |
+| 500 | Internal Server Error | Erro inesperado no servidor (não tratado no código) |
+
+**200 vs 204:** 200 sempre vem com corpo (dados, mensagem). 204 é sucesso sem nada pra devolver — comum em DELETE, já que depois de apagar o recurso não sobra informação relevante pra mandar de volta. Nesse projeto optei por manter 200 com mensagem no DELETE, seguindo a estrutura dos projetos anteriores.
