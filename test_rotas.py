@@ -329,7 +329,15 @@ def test_POST_criar_imovel_201(mock_conectar_banco, client):
     response = client.post("/imoveis", json=payload)
 
     assert response.status_code == 201
-    assert response.get_json() == {"id": 1}
+    assert response.get_json() == {
+        "id": 1,
+        "links": [
+            {"rel": "self", "href": "http://localhost/imoveis/1", "method": "GET"},
+            {"rel": "atualizar", "href": "http://localhost/imoveis/1", "method": "PUT"},
+            {"rel": "deletar", "href": "http://localhost/imoveis/1", "method": "DELETE"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "INSERT INTO imoveis (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
@@ -346,7 +354,12 @@ def test_POST_criar_imovel_400(mock_conectar_banco, client):
     response = client.post("/imoveis", json={"logradouro": "Nicole Common"})
 
     assert response.status_code == 400
-    assert response.get_json() == {"erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao"}
+    assert response.get_json() == {
+        "erro": "Campos obrigatórios: logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao",
+        "links": [
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_conectar_banco.assert_not_called()
 
