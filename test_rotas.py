@@ -292,7 +292,7 @@ def test_deletar_imoveis_not_found_404(mock_conectar_banco, client):
     mock_conn = MagicMock()
     mock_cursor = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
-    
+
     mock_cursor.fetchone.return_value = None
     mock_conectar_banco.return_value = mock_conn
 
@@ -308,4 +308,40 @@ def test_deletar_imoveis_not_found_404(mock_conectar_banco, client):
 
     mock_cursor.close.assert_called_once()
     mock_conn.close.assert_called_once()
-    
+
+# Teste buscar imóveis por tipo (casa, apartamento, terreno, etc) com todos os seus atributos;
+@patch("utils.conectar_banco")
+def test_GET_listar_imoveis_por_tipo_200(mock_conectar_banco, client):
+    """GET /imoveis - lista com dados."""
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchall.return_value = [
+        (1, "Nicole Common", "Travessa", "Lake Danielle", "Judymouth", "85184", "casa em condominio", 488424, "2017-07-29"),
+    ]
+
+    mock_conectar_banco.return_value = mock_conn
+
+    response = client.get("/imoveis/casa em condominio") # substitui pela rota definida no sql do teste
+
+    assert response.status_code == 200
+    assert response.get_json() == [{
+        "id": 1,
+        "logradouro": "Nicole Common", 
+        "tipo_logradouro": "Travessa", 
+        "bairro": "Lake Danielle", 
+        "cidade": "Judymouth", 
+        "cep": "85184", 
+        "tipo": "casa em condominio", 
+        "valor": 488424.0, 
+        "data_aquisicao": "2017-07-29"
+        },
+    ]
+
+    mock_cursor.execute.assert_called_once_with(
+        "SELECT * FROM imoveis WHERE tipo = %s",
+        ("casa em condominio",)
+    )
+    mock_cursor.fetchall.assert_called_once()
+    mock_cursor.close.assert_called_once()
+    mock_conn.close.assert_called_once()
