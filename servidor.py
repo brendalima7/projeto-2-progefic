@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, url_for
 import utils
 
 app = Flask(__name__)
@@ -8,7 +8,21 @@ app = Flask(__name__)
 def listar_imoveis_rota():
 
     dados = utils.listar_imoveis()
-    return jsonify(dados), 200
+
+    for imovel in dados:
+        imovel["links"] = [
+            {'rel': 'self', 'href': url_for('listar_um_imovel_rota', id=imovel['id'], _external=True), 'method': 'GET'},
+            {'rel': 'atualizar', 'href': url_for('alterar_imovel_rota', id=imovel['id'], _external=True), 'method': 'PUT'},
+            {'rel': 'deletar', 'href': url_for('deletar_imovel_rota', id=imovel['id'], _external=True), 'method': 'DELETE'}
+        ]
+    return jsonify({
+        "imoveis": dados,
+        "links": [
+            {'rel': 'self', 'href': url_for('listar_imoveis_rota', _external=True), 'method': 'GET'},
+            {'rel': 'create', 'href': url_for('criar_imovel_rota', _external=True), 'method': 'POST'}
+        ]
+    }), 200
+
 
 @app.route("/imoveis/<int:id>", methods=['GET'])
 def listar_um_imovel_rota(id):
