@@ -228,6 +228,7 @@ def test_update_imovel_400(mock_conectar_banco, client):
 
     mock_conectar_banco.assert_not_called()
 
+#Teste atualizar imovel não encontrado
 @patch("utils.conectar_banco")
 def test_update_imovel_not_found_404(mock_conectar_banco, client):
     """PUT /imoveis/<id> - contato não encontrado (rowcount=0)."""
@@ -259,4 +260,29 @@ def test_update_imovel_not_found_404(mock_conectar_banco, client):
     )
     mock_cursor.close.assert_called_once()
     mock_conn.close.assert_called_once()
+
+
+@patch("utils.conectar_banco")
+def test_deletar_imovel_200(mock_conectar_banco, client):
+    """DELETE /imoveis/<id> - deleta com sucesso."""
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_cursor.fetchone.return_value = (1, "Nicole Common", "Travessa", "Lake Danielle", "Judymouth", "86184", "casa em condominio", 488424.0, "2017-07-29")
+
+    mock_cursor.rowcount = 1
+    mock_conectar_banco.return_value = mock_conn
+
+    response = client.delete("/imoveis/1")
+
+    assert response.status_code == 200
+    assert response.get_json() == {"mensagem": "Imóvel excluído com sucesso"}
+
+    mock_cursor.execute.assert_has_calls([
+        call("SELECT * FROM imoveis WHERE id = %s", (1,)),
+        call("DELETE FROM imoveis WHERE id = %s", (1,),)
+    ])
+    mock_conn.commit.assert_called_once()
+    assert mock_cursor.close.call_count == 2
+    assert mock_conn.close.call_count == 2
     
