@@ -98,10 +98,29 @@ def listar_imoveis_por_tipo_rota(tipo):
     validacao = utils.validar_tipo(tipo_normalizado) # retorna True ou False
     
     if not validacao:
-        return jsonify({"erro": "Tipo inválido"}), 400
+        return jsonify({
+            "erro": "Tipo inválido",
+            "links": [
+                {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+            ]
+        }), 400
 
     dados = utils.listar_imoveis_por_tipo(tipo_normalizado)
-    return jsonify(dados), 200
+
+    for imovel in dados:
+        imovel["links"] = [
+            {"rel": "self", "href": url_for("listar_um_imovel_rota", id=imovel["id"], _external=True), "method": "GET"},
+            {"rel": "atualizar", "href": url_for("alterar_imovel_rota", id=imovel["id"], _external=True), "method": "PUT"},
+            {"rel": "deletar", "href": url_for("deletar_imovel_rota", id=imovel["id"], _external=True), "method": "DELETE"}
+        ]
+
+    return jsonify({
+        "imoveis": dados,
+        "links": [
+            {"rel": "self", "href": url_for("listar_imoveis_por_tipo_rota", tipo=tipo_normalizado, _external=True), "method": "GET"},
+            {"rel": "collection", "href": url_for("listar_imoveis_rota", _external=True), "method": "GET"}
+        ]
+    }), 200
 
 @app.route("/imoveis/cidade/<cidade>", methods=['GET'])
 def listar_imoveis_por_cidade_rota(cidade):
