@@ -482,7 +482,12 @@ def test_deletar_imovel_200(mock_conectar_banco, client):
     response = client.delete("/imoveis/1")
 
     assert response.status_code == 200
-    assert response.get_json() == {"mensagem": "Imóvel excluído com sucesso"}
+    assert response.get_json() == {
+        "mensagem": "Imóvel excluído com sucesso",
+        "links": [
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_has_calls([
         call("SELECT * FROM imoveis WHERE id = %s", (1,)),
@@ -505,7 +510,13 @@ def test_deletar_imoveis_not_found_404(mock_conectar_banco, client):
     response = client.delete("/imoveis/999")
 
     assert response.status_code == 404
-    assert response.get_json() == {"erro": "Imóvel não encontrado"}
+    assert response.get_json() == {
+        "erro": "Imóvel não encontrado",
+        "links": [
+            {"rel": "resource", "href": "http://localhost/imoveis/999", "method": "GET"},
+            {"rel": "collection", "href": "http://localhost/imoveis", "method": "GET"},
+        ]
+    }
 
     mock_cursor.execute.assert_called_once_with(
         "SELECT * FROM imoveis WHERE id = %s",
